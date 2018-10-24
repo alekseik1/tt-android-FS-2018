@@ -11,10 +11,13 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
-    var currTime = 0L
     val BASIC_TIME = 10L
+    var currTime = BASIC_TIME
+    val CURR_TIME_TAG = "currTime"
+    val TAG_TIMER_RUNNING = "timerRunning"
+    var isRunning = false
 
-    lateinit var timer: CountDownTimer
+    var timer: CountDownTimer = initTimer(currTime)
 
     fun initTimer(totalTime: Long): CountDownTimer {
         val timer = object: CountDownTimer(TimeUnit.SECONDS.toMillis(totalTime), TimeUnit.SECONDS.toMillis(1)) {
@@ -29,6 +32,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return timer
+    }
+
+    fun startTimer() {
+        timer = initTimer(currTime)
+        timer.start()
+        isRunning = true
+    }
+
+    fun stopTimer() {
+        timer.cancel()
+        isRunning = false
     }
 
     fun getNaturalTime(timeMillis: Long): Long {
@@ -46,19 +60,34 @@ class MainActivity : AppCompatActivity() {
 
         val btnStart = findViewById<Button>(R.id.btn_start)
         btnStart.setOnClickListener {
-            var startTime = BASIC_TIME
-            savedInstanceState?.run {
-                startTime = getLong("currTime", BASIC_TIME)
-            }
-            timer = initTimer(startTime)
-            timer.start()
+            if(!isRunning)
+                startTimer()
         }
 
     }
 
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+        savedInstanceState?.run {
+            currTime = getLong(CURR_TIME_TAG, BASIC_TIME)
+            isRunning = getBoolean(TAG_TIMER_RUNNING, false)
+        }
+        if (isRunning) {
+            startTimer()
+        }
+    }
+
     override fun onSaveInstanceState(outState: Bundle?) {
-        outState?.putLong("currTime", currTime)
-        timer.cancel()
+        outState?.run {
+            putLong(CURR_TIME_TAG, currTime)
+            putBoolean(TAG_TIMER_RUNNING, isRunning)
+        }
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onStop() {
+        if(isRunning)
+            stopTimer()
+        super.onStop()
     }
 }
