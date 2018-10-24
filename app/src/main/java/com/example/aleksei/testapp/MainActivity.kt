@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
-    val BASIC_TIME = 10L
+    val BASIC_TIME = 1000L
     var currTime = BASIC_TIME
     val CURR_TIME_TAG = "currTime"
     val TAG_TIMER_RUNNING = "timerRunning"
@@ -74,6 +74,11 @@ class MainActivity : AppCompatActivity() {
             currTime = getLong(CURR_TIME_TAG, BASIC_TIME)
             isRunning = getBoolean(TAG_TIMER_RUNNING, false)
         }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
         if (isRunning) {
             startTimer()
         }
