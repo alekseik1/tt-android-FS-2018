@@ -17,6 +17,8 @@ class MainActivity : AppCompatActivity() {
     val TAG_TIMER_RUNNING = "timerRunning"
     var isRunning = false
 
+    val numbersConverter = NumbersConverter()
+
     var timer: CountDownTimer = initTimer(currTime)
 
     fun initTimer(totalTime: Long): CountDownTimer {
@@ -45,9 +47,9 @@ class MainActivity : AppCompatActivity() {
         isRunning = false
     }
 
-    fun getNaturalTime(timeMillis: Long): Long {
+    fun getNaturalTime(timeMillis: Long): String {
         val timeSeconds = TimeUnit.MILLISECONDS.toSeconds(timeMillis)
-        return timeSeconds
+        return numbersConverter.convert(timeSeconds.toInt())
     }
 
     lateinit var tvHello: TextView
